@@ -3,7 +3,9 @@ import type { Group } from "./types.ts";
 
 const GROUP_TYPE = "Community Group";
 
-const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_", textNodeName: "#text" });
+// CCB descriptions are full of &amp;-style entities; the parser's default expansion cap is too low for the whole roster.
+const PARSE_LIMITS = { enabled: true, maxEntityCount: 1_000_000, maxTotalExpansions: Infinity, maxExpandedLength: 100_000_000 };
+const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@_", textNodeName: "#text", processEntities: PARSE_LIMITS });
 
 const str = (v: unknown): string => {
   if (v == null) return "";
