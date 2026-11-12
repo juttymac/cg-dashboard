@@ -2,6 +2,7 @@ import { XMLParser } from "fast-xml-parser";
 import type { Group } from "./types.ts";
 
 const GROUP_TYPE = "Community Group";
+const HIDDEN_CAMPUSES = ["Naples"]; // same rule as Group Finder
 
 // CCB descriptions are full of &amp;-style entities; the parser's default expansion cap is too low for the whole roster.
 const PARSE_LIMITS = { enabled: true, maxEntityCount: 1_000_000, maxTotalExpansions: Infinity, maxExpandedLength: 100_000_000 };
@@ -36,7 +37,7 @@ export async function fetchGroups(): Promise<Group[]> {
   const list: Record<string, unknown>[] = raw ? (Array.isArray(raw) ? raw : [raw]) : [];
 
   return list
-    .filter((g) => str(g.group_type) === GROUP_TYPE && str(g.inactive) !== "true")
+    .filter((g) => str(g.group_type) === GROUP_TYPE && str(g.inactive) !== "true" && !HIDDEN_CAMPUSES.includes(str(g.campus)))
     .map((g) => {
       const cap = num(g.group_capacity ?? g.membership_limit ?? g.capacity);
       return {
