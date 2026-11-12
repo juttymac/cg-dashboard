@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
-import { fetchGroups, fetchAttendance } from "@/lib/ccb";
+import { fetchGroups } from "@/lib/ccb";
+import { getAttendance } from "@/lib/attendance";
 import { latestUpdates, lastNoteDates } from "@/lib/data";
 import type { DashboardPayload } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60; // first attendance load takes ~10s, then it is cached for an hour
+export const maxDuration = 60; // computing attendance from CCB takes ~10s (only when nothing is cached)
 
 export async function GET() {
   try {
     const [groups, updates, lastNotes] = await Promise.all([fetchGroups(), latestUpdates(), lastNoteDates()]);
     // Attendance is slow and optional: if it fails the rest of the dashboard still loads.
-    let att: Awaited<ReturnType<typeof fetchAttendance>> | null = null, attendanceError: string | null = null;
-    try { att = await fetchAttendance(groups); } catch (e) { attendanceError = (e as Error).message; }
+    let att: Awaited<ReturnType<typeof getAttendance>> | null = null, attendanceError: string | null = null;
+    try { att = await getAttendance(groups); } catch (e) { attendanceError = (e as Error).message; }
     const body: DashboardPayload = {
       groups, updates, lastNoteDates: lastNotes,
       attendance: att?.monthly ?? null, weeklyAttendance: att?.weekly ?? null, weekOf: att?.weekOf ?? null, attendanceError,

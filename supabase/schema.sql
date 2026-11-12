@@ -28,3 +28,11 @@ alter table notes enable row level security;
 alter table pastoral_updates enable row level security;
 
 -- Phase 2 (not built): join_requests from the Group Finder map, for interest-vs-capacity.
+
+-- Attendance takes ~10s to compute from CCB, so the dashboard stores the result here.
+create table if not exists attendance_cache (
+  key text primary key,
+  value jsonb not null,
+  updated_at timestamptz not null default now()
+);
+alter table attendance_cache enable row level security;

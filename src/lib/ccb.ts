@@ -90,8 +90,8 @@ const mondayOf = (ymd: string) => {
   return iso(d);
 };
 
-export async function fetchAttendance(groups: Group[], now = new Date()): Promise<AttendanceResult> {
-  if (cache && Date.now() - cache.at < CACHE_MS) return cache.value;
+export async function computeAttendance(groups: Group[], now = new Date(), force = false): Promise<AttendanceResult> {
+  if (!force && cache && Date.now() - cache.at < CACHE_MS) return cache.value;
 
   const campusOf = new Map(groups.map((g) => [g.id, g.campus]));
 
