@@ -43,7 +43,7 @@ export default function Dashboard() {
       </header>
       <main>
         <section className="cards">
-          <Card label="Weekly attendance" value={weekly ?? "—"} sub={weekly == null ? "CCB attendance not connected" : "latest week"} />
+          <Card label="Weekly attendance" value={weekly ?? "—"} sub={weekly == null ? "attendance unavailable" : `week of ${data.weekOf}`} />
           <Card label="Open spots" value={open.reduce((s, r) => s + spotsOpen(r.g), 0)} sub={`${open.length} groups with room`} />
           <Card label="Capacity filled" value={pct == null ? "—" : `${pct}%`} sub="enrolled ÷ capacity" />
           <Card label="Submitted this cycle" value={`${submitted}/${rows.length}`} sub="within 6 weeks" />
@@ -52,7 +52,7 @@ export default function Dashboard() {
 
         <section className="panel">
           <h2>Attendance trend</h2>
-          {data.attendance ? <TrendChart points={data.attendance} campus={campus} /> : <div className="empty">Attendance source is not connected yet, so there is nothing to chart.</div>}
+          {data.attendance ? <TrendChart points={data.attendance} campus={campus} /> : <div className="empty">Attendance could not be loaded{data.attendanceError ? `: ${data.attendanceError}` : ""}.</div>}
         </section>
 
         <div className="grid2">

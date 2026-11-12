@@ -41,6 +41,8 @@ export interface DashboardPayload {
   updates: PastoralUpdate[];     // latest per group
   lastNoteDates: Record<string, string>; // group_id -> most recent note date
   attendance: AttendancePoint[] | null;  // null = source not connected yet
-  weeklyAttendance: Record<string, number> | null; // campus -> latest week total
+  weeklyAttendance: Record<string, number> | null; // campus -> latest complete week total
+  weekOf: string | null;                 // Monday of that week
+  attendanceError: string | null;
   generatedAt: string;
 }
