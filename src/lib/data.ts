@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Note, NoteType, PastoralUpdate } from "./types.ts";
+import type { Note, NoteType, LeaderUpdate } from "./types.ts";
 
 function db() {
   const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = process.env;
@@ -7,11 +7,11 @@ function db() {
   return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 }
 
-export async function latestUpdates(): Promise<PastoralUpdate[]> {
-  const { data, error } = await db().from("pastoral_updates").select("*").order("submitted_at", { ascending: false });
+export async function latestUpdates(): Promise<LeaderUpdate[]> {
+  const { data, error } = await db().from("leader_updates").select("*").order("submitted_at", { ascending: false });
   if (error) throw new Error(error.message);
   const seen = new Set<string>();
-  return (data as PastoralUpdate[]).filter((u) => (seen.has(u.group_id) ? false : (seen.add(u.group_id), true)));
+  return (data as LeaderUpdate[]).filter((u) => (seen.has(u.group_id) ? false : (seen.add(u.group_id), true)));
 }
 
 export async function lastNoteDates(): Promise<Record<string, string>> {
@@ -36,11 +36,11 @@ export async function addNote(n: { group_id: string; type: NoteType; author: str
   return data as Note;
 }
 
-export async function updatesFor(groupId: string): Promise<PastoralUpdate[]> {
-  const { data, error } = await db().from("pastoral_updates").select("*").eq("group_id", groupId)
+export async function updatesFor(groupId: string): Promise<LeaderUpdate[]> {
+  const { data, error } = await db().from("leader_updates").select("*").eq("group_id", groupId)
     .order("submitted_at", { ascending: false }).limit(5);
   if (error) throw new Error(error.message);
-  return data as PastoralUpdate[];
+  return data as LeaderUpdate[];
 }
 
 /** Returns true if a note was removed. */

@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import { NOTE_TYPES, type Group, type Note, type NoteType, type PastoralUpdate } from "@/lib/types";
+import { NOTE_TYPES, type Group, type Note, type NoteType, type LeaderUpdate } from "@/lib/types";
 import { lastContactLabel, needsContact, spotsOpen, submissionStatus } from "@/lib/rules";
 
 const fmt = (d: string) => new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
 
 export default function GroupDetail({ group, update, onClose, onLastNoteChange }: {
-  group: Group; update?: PastoralUpdate; onClose: () => void; onLastNoteChange: (groupId: string, date: string | null) => void;
+  group: Group; update?: LeaderUpdate; onClose: () => void; onLastNoteChange: (groupId: string, date: string | null) => void;
 }) {
   const [notes, setNotes] = useState<Note[] | null>(null);
   const [err, setErr] = useState("");

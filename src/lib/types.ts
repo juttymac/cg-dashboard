@@ -14,8 +14,8 @@ export interface Group {
   enrolled: number;
 }
 
-/** From Supabase pastoral_updates (latest per group). */
-export interface PastoralUpdate {
+/** From Supabase leader_updates (latest per group). */
+export interface LeaderUpdate {
   group_id: string;
   submitted_at: string;
   health_rating: number | null;
@@ -38,7 +38,7 @@ export interface AttendancePoint { month: string; campus: string; attendance: nu
 
 export interface DashboardPayload {
   groups: Group[];
-  updates: PastoralUpdate[];     // latest per group
+  updates: LeaderUpdate[];     // latest per group
   lastNoteDates: Record<string, string>; // group_id -> most recent note date
   attendance: AttendancePoint[] | null;  // null = source not connected yet
   weeklyAttendance: Record<string, number> | null; // campus -> latest complete week total
