@@ -84,7 +84,7 @@ export default function Dashboard() {
       </main>
       {selected && (
         <GroupDetail group={selected} update={updates.get(selected.id)} onClose={() => setOpenId(null)}
-          onNoteAdded={(id, date) => setData((d) => d && { ...d, lastNoteDates: { ...d.lastNoteDates, [id]: date } })} />
+          onLastNoteChange={(id, date) => setData((d) => { if (!d) return d; const m = { ...d.lastNoteDates }; if (date) m[id] = date; else delete m[id]; return { ...d, lastNoteDates: m }; })} />
       )}
     </>
   );

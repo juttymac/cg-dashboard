@@ -5,8 +5,8 @@ import { lastContactLabel, needsContact, spotsOpen, submissionStatus } from "@/l
 
 const fmt = (d: string) => new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
 
-export default function GroupDetail({ group, update, onClose, onNoteAdded }: {
-  group: Group; update?: PastoralUpdate; onClose: () => void; onNoteAdded: (groupId: string, date: string) => void;
+export default function GroupDetail({ group, update, onClose, onLastNoteChange }: {
+  group: Group; update?: PastoralUpdate; onClose: () => void; onLastNoteChange: (groupId: string, date: string | null) => void;
 }) {
   const [notes, setNotes] = useState<Note[] | null>(null);
   const [err, setErr] = useState("");
@@ -33,9 +33,21 @@ export default function GroupDetail({ group, update, onClose, onNoteAdded }: {
       if (!r.ok) throw new Error(j.error || "Could not save");
       try { localStorage.setItem("cg-author", author); } catch {}
       setNotes((n) => [j as Note, ...(n ?? [])]);
-      onNoteAdded(group.id, (j as Note).date);
+      onLastNoteChange(group.id, (j as Note).date);
       setText("");
     } catch (x) { setErr((x as Error).message); } finally { setSaving(false); }
+  }
+
+  async function remove(n: Note) {
+    if (!window.confirm(`Delete this ${n.type} note from ${n.author}? This cannot be undone.`)) return;
+    setErr("");
+    try {
+      const r = await fetch(`/api/notes?id=${n.id}`, { method: "DELETE" });
+      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || "Could not delete");
+      const rest = (notes ?? []).filter((x) => x.id !== n.id);
+      setNotes(rest);
+      onLastNoteChange(group.id, rest.reduce<string | null>((m, x) => (!m || x.date > m ? x.date : m), null));
+    } catch (x) { setErr((x as Error).message); }
   }
 
   const last = notes?.[0]?.date ?? null;
@@ -75,7 +87,7 @@ export default function GroupDetail({ group, update, onClose, onNoteAdded }: {
         {!notes ? <div className="empty">Loading…</div> : notes.length === 0 ? <div className="empty">No notes yet.</div> : (
           <ul className="timeline">
             {notes.map((n) => (
-              <li key={n.id}><div className="meta">{fmt(n.date)} · {n.type} · {n.author}</div><div>{n.text}</div></li>
+              <li key={n.id}><div className="meta">{fmt(n.date)} · {n.type} · {n.author} <button className="link" onClick={() => remove(n)}>Delete</button></div><div>{n.text}</div></li>
             ))}
           </ul>
         )}

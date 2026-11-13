@@ -44,3 +44,5 @@ button.ghost { background: transparent; color: var(--grey); border: 1px solid va
 form.note { display: grid; gap: 8px; background: var(--white); border: 1px solid var(--line); border-radius: 6px; padding: 14px; }
 form.note .r { display: flex; gap: 8px; } form.note .r > * { flex: 1; }
 .quote { font-style: italic; color: var(--gold); }
+button.link { background: none; color: var(--bad); padding: 0 0 0 8px; font-size: 10px; text-decoration: underline; }
+button.link:hover { background: none; color: #6d2822; }

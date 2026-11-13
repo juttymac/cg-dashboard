@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { addNote, notesFor, updatesFor } from "@/lib/data";
+import { addNote, deleteNote, notesFor, updatesFor } from "@/lib/data";
 import { NOTE_TYPES, type NoteType } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +25,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "group_id, author, text and a valid type are required" }, { status: 400 });
   try {
     return NextResponse.json(await addNote({ group_id, author, text, type }), { status: 201 });
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const id = Number(req.nextUrl.searchParams.get("id"));
+  if (!Number.isInteger(id) || id <= 0) return NextResponse.json({ error: "valid id required" }, { status: 400 });
+  try {
+    return (await deleteNote(id))
+      ? NextResponse.json({ ok: true })
+      : NextResponse.json({ error: "note not found" }, { status: 404 });
   } catch (e) {
     return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }

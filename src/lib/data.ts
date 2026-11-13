@@ -42,3 +42,10 @@ export async function updatesFor(groupId: string): Promise<PastoralUpdate[]> {
   if (error) throw new Error(error.message);
   return data as PastoralUpdate[];
 }
+
+/** Returns true if a note was removed. */
+export async function deleteNote(id: number): Promise<boolean> {
+  const { error, count } = await db().from("notes").delete({ count: "exact" }).eq("id", id);
+  if (error) throw new Error(error.message);
+  return (count ?? 0) > 0;
+}
